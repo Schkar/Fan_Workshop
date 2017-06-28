@@ -1,0 +1,27 @@
+{
+  "name": "gulp_npm_file",
+  "version": "1.0.0",
+  "description": "npm gulp instalation file",
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Schkar/Malinowy.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Schkar/Malinowy/issues"
+  },
+  "homepage": "https://github.com/Schkar/Malinowy#readme",
+  "devDependencies": {
+    "autoprefixer": "^7.1.0",
+    "browser-sync": "^2.18.11",
+    "gulp": "^3.9.1",
+    "gulp-postcss": "^7.0.0",
+    "gulp-sass": "^3.1.0",
+    "gulp-sourcemaps": "^2.6.0"
+  }
+}
