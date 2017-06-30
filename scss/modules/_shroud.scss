@@ -1,0 +1,20 @@
+.shroud{
+    display: none;
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    background-color: transparent;
+    opacity: 1;
+    transition: opacity 0.3s;
+    z-index: 999;
+    cursor: none;
+    &:after{
+        content:'';
+        position:absolute;
+        left:675px;
+        top:325px;
+        border-radius:100%;
+        width:150px; height:150px;
+        box-shadow: 0px 0px 0px 2000px black;
+    }
+}

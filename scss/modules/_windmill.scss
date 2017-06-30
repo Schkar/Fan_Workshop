@@ -1,4 +1,8 @@
 .windmil_pic{
+    position: relative;
+    left: 40%;
+    transform: translate(0%, -50%);
+    top: 200px;
     display: inline-block;
-    transform-origin: (-50%,-50%);
+    transform-origin: 50% 51.62%;
 }
