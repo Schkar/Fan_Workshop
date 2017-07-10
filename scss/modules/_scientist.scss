@@ -1,0 +1,76 @@
+.scientist{
+        position: absolute;
+        left: 45vw;
+        top: 20vh;
+        @include smallest{
+            left: 52vw;
+            top: -20vh;
+        }
+        @include small{
+            left: 59vw;
+            top: -25vh;
+        }
+        @include medium{
+            left: 55vw;
+            top: 5vh;
+        }
+        @media (min-width: "1280px"){
+            left: 55vw;
+            top: 25vh;
+        }
+        @include large{
+            left: 55vw;
+            top: 22vh;
+        }
+        .speech_bubble{
+            top: -20px;
+            left: 0;
+            font-size: 0.7em;
+            width: 150px;
+            height: 100px;
+            @include smallest{
+                top: 0;
+                left: 300px;
+                width: 250px;
+                height: 100px;
+            }
+            @include medium{
+                font-size: 1.2em;
+                top: 0;
+                left: 100px;
+            }
+            position: relative;
+            font-family: "Basic";
+            padding: 10px;
+            background-color: white;
+            border: 2px solid green;
+            border-radius: 10px;
+            &::after{
+                content: "";
+                position: absolute;
+                left: 145px;
+                @include smallest{
+                    left: 20px;
+                }
+                top: 120px;
+                border-right: 20px solid transparent;
+                border-top: 80px solid green;
+            }
+        }
+        .scientist_svg{
+            width: 170px;
+            height: 250px;
+            @include small{
+                width: 220px;
+                height: 320px;
+            }
+            @include medium{
+                width: 290px;
+                height: 460px;
+            }      
+            @include large{
+                width: 390px;
+                height: 560px;
+            }    
+        }
+}

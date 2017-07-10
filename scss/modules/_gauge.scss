@@ -1,7 +1,13 @@
 #power_gauge{
     border: 1px solid black;
-    position: relative;
-    left: 200px;
-    top: 0;
+    position: absolute;
+    left: 10vw;
+    top: 15vh;
     background-color: white;
+    width: 50px;
+    height: 150px;
+    @media (min-width: "640px"){
+        width: 100px;
+        height: 300px;
+    }
 }

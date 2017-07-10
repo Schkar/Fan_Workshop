@@ -1,8 +1,23 @@
 .windmil_pic{
-    position: relative;
-    left: 40%;
-    transform: translate(0%, -50%);
-    top: 200px;
+    position: absolute;
+    left: 10%;
+    top: 280px;
     display: inline-block;
     transform-origin: 50% 51.62%;
+    transition: transform 0.5s;
+    width: 100px;
+    @include smallest{
+        top: 25%;
+        left: 30%;
+    }
+    @include small{
+        left: 35%;
+        width: 150px;
+    }
+    @include medium{
+        width: 200px;
+    }
+    @include large{
+        width: 250px;
+    }
 }

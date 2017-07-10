@@ -1,3 +1,42 @@
 .no_mic{
+    font-family: "Orbitron";
+    font-size: 0.5em;
     display: none;
+    position: absolute;
+    width: 80%;
+    left: 10%;
+    @include small{
+        font-size: 1em;
+    }
+    background-color: #fce6c7;
+    margin: 0;
+    padding: 10px;
+    .no_mic_text{
+        margin: 5px;
+        text-align: center;
+        width: 50%;
+        @include small{
+            margin: 20px;
+        }
+        display: inline-block;
+    }
+    .button_to_smash{
+        font-size: 1em;
+        margin: 20px auto;
+        border: 1px solid grey;
+        width: 40px;
+        height: 40px;
+        @include small{
+            width: 100px;
+            height: 100px;
+            font-size: 1em;
+        }
+        background-color: red;
+        border-radius: 50%;
+        box-shadow: 0 0 5px 5px black;
+        &:active{
+            box-shadow: 0 0 5px 5px lighten(black, 10%);
+            background-color: darken(red, 10%);
+        }
+    }
 }

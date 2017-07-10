@@ -1,5 +1,7 @@
+@import "partials/mixins";
+@import "modules/background";
 @import "modules/windmill";
 @import "modules/backup";
 @import "modules/gauge";
-@import "modules/_shroud.scss";
-@import "modules/background";
+@import "modules/shroud";
+@import "modules/scientist";

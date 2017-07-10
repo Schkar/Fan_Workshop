@@ -4,9 +4,11 @@ var sourcemaps = require("gulp-sourcemaps");
 var browserSync = require('browser-sync').create();
 var postcss = require('gulp-postcss');
 var autoprefixer = require('autoprefixer');
+var wait = require('gulp-wait');
 
 gulp.task('sass', function() {
   return gulp.src('scss/**/*.scss') // Gets all files ending with .scss in app/scss
+    .pipe(wait(500))
     .pipe(sourcemaps.init())
     .pipe(sass({errLogToConsole: true,outputStyle: 'expanded'}))
     .pipe(sourcemaps.write())
