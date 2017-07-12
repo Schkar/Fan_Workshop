@@ -1,9 +1,7 @@
 document.addEventListener("DOMContentLoaded",function () {
-    console.log("Działam");
-
     //TODO: function for fail/success text
-    //TODO: shroud functionality
     //TODO: animation for svg scientist
+    //TODO: Uncomment whole talking section
     
     let audioContext = null;
     let meter = null;
@@ -12,12 +10,14 @@ document.addEventListener("DOMContentLoaded",function () {
     let noMic = document.querySelector(".no_mic");
     let degrees = 0;
     let styleElem = document.head.appendChild(document.createElement("style"));
-    let currentHeight = 15;
+    let currentHeight = 35;
     let backupButton = document.querySelector(".button_to_smash");
     let c = document.getElementById("power_gauge");
     let ctx = c.getContext("2d");
     let heightOfGauge = c.scrollHeight > 200 ? 280 : 140;
     let numberToDivideOpacityBy = c.scrollHeight > 200 ? 2.8 : 1.4;
+    let micValue = true;
+    let shouldIStart = false;
     let textArray = 
         [
             "Welcome to our PowerPlant!",
@@ -37,7 +37,6 @@ document.addEventListener("DOMContentLoaded",function () {
             "Since we are inside the building and there is no wind, you will have to use your breath.",
             "Quick! Save us!"
         ];
-
     let successText = 
         [
             "Phew! We are saved!",
@@ -46,187 +45,199 @@ document.addEventListener("DOMContentLoaded",function () {
             "But that is just my job, as a scientist, no need to thank me.",
             "Let's get out of here before anyone notices any problems."
         ];
-
     let failureText = "Oh no. You failed:(. There is no hope for us now...";
-
     let speechBubble = document.querySelector(".speech_bubble");
-
     let textToShow = "";
-
     let generalCounter = 0;
 
-    let speller = () => {
-        let text = textArray[generalCounter]
-        let textPromise = new Promise((resolve) => {
-            textInterval = setInterval( () => {
-                let textLength = text.length;
-                if (textToShow.length === text.length) {
-                    clearInterval(textInterval)
-                    textToShow = "";
-                    return true;
-                }
-                textToShow = text.substring(0,textToShow.length + 1);
-                speechBubble.innerText = textToShow;
-            },30);
-            setTimeout(function(){
-                generalCounter++
-                resolve();
-            }, text.length*50+1000);
-        });
-        return textPromise;
-    }
-
-    speller()
-    .then(speller)
-    .then(speller)
-    .then(speller)
-    .then(speller)
-    .then(speller)
-    .then(speller)
-    .then( () => {
-        document.querySelector(".shroud").style.display = "block";
-        speller
-    }) //<----- Oops
-    .then(speller)
-    .then(speller) //<----- Flashlight
-    .then(speller)
-    .then(speller)
-    .then(speller)
-    .then(speller)
-    .then(speller)
-    .then(speller)
+    // Function with promise to spell text in message bubble
+        let speller = () => {
+            let text = textArray[generalCounter]
+            let textPromise = new Promise((resolve) => {
+                textInterval = setInterval( () => {
+                    let textLength = text.length;
+                    if (textToShow.length === text.length) {
+                        clearInterval(textInterval)
+                        textToShow = "";
+                        return true;
+                    }
+                    textToShow = text.substring(0,textToShow.length + 1);
+                    speechBubble.innerText = textToShow;
+                },30);
+                setTimeout(function(){
+                    generalCounter++
+                    resolve();
+                }, text.length*50+1000);
+            });
+            return textPromise;
+        }
+    // Speaking section of promise chain...
+        // speller()
+        // .then(speller)
+        // .then(speller)
+        // .then(speller)
+        // .then(speller)
+        // .then(speller)
+        // .then(speller)
+        // .then(speller)
+        // .then( () => {
+        //     document.querySelector(".shroud").style.display = "block";
+        //     speller
+        // }) //<----- Oops
+        // .then(speller)
+        // .then(speller)
+        // .then( () => {
+        //     speller
+        //     document.querySelector(".shroud").style.backgroundColor = "transparent";
+        //     c.style.display = "block";
+        //     micValue ? document.querySelector(".windmil_pic").style.display = "block" : noMic.style.display = "block";
+        //     shouldIStart = true;
+        // }) //<----- Flashlight
+        // .then(speller)
+        // .then(speller)
+        // .then(speller)
+        // .then(speller)
+        // .then(speller)
 
     // Create gradient
-    let grd = ctx.createLinearGradient(0,c.scrollHeight,0,0);
-    grd.addColorStop(0.15,"darkred");
-    grd.addColorStop(0.2,"red");
-    grd.addColorStop(0.5,"orange");
-    grd.addColorStop(0.8,"darkgreen");
-    grd.addColorStop(1,"lightgreen");
+        let grd = ctx.createLinearGradient(0,c.scrollHeight,0,0);
+        grd.addColorStop(0.15,"darkred");
+        grd.addColorStop(0.2,"red");
+        grd.addColorStop(0.5,"orange");
+        grd.addColorStop(0.8,"darkgreen");
+        grd.addColorStop(1,"lightgreen");
     // Fill with gradient
-    ctx.fillStyle = grd;
+        ctx.fillStyle = grd;
 
-    document.querySelector(".shroud").addEventListener("mousemove", function(event){    
-        styleElem.innerHTML = ".shroud:after {left: "+event.clientX+"px; top: "+event.clientY+"px;}"
-    })
+    // Flashlight functionality
+        document.querySelector(".shroud").addEventListener("mousemove", function(event){    
+            styleElem.innerHTML = ".shroud:after {left: "+event.clientX+"px; top: "+event.clientY+"px;}"
+        })
     
     // Retrieve AudioContext with all the prefixes of the browsers
-    window.AudioContext = window.AudioContext || window.webkitAudioContext;
+        window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
     // Get an audio context
-    audioContext = new AudioContext();
+        audioContext = new AudioContext();
 
-    /**
-     * Callback triggered if the microphone permission is denied
-     */
-    function onMicrophoneDenied() {
-        noMic.style.display = "block";
-    }
+    // Callback triggered if the microphone permission is denied
+        function onMicrophoneDenied() {
+        micValue = false;
+        }
 
-    /**
-     * Callback triggered if the access to the microphone is granted
-     */
-    function onMicrophoneGranted(stream) {
-        // Create an AudioNode from the stream.
-        mediaStreamSource = audioContext.createMediaStreamSource(stream);
-        // Create a new volume meter and connect it.
-        meter = createAudioMeter(audioContext);
-        mediaStreamSource.connect(meter);
+    // Callback triggered if the access to the microphone is granted
+        function onMicrophoneGranted(stream) {
+            // Create an AudioNode from the stream.
+            mediaStreamSource = audioContext.createMediaStreamSource(stream);
+            // Create a new volume meter and connect it.
+            meter = createAudioMeter(audioContext);
+            mediaStreamSource.connect(meter);
 
-        // Trigger callback that shows the level of the "Volume Meter"
-        onLevelChange();
-    }
+            // Trigger callback that shows the level of the "Volume Meter"
+            onLevelChange();
+        }
 
-    /**
-     * This function is executed repeatedly
-     */
-    function onLevelChange(time) {
-        // set up the next callback
-        rafID = window.requestAnimationFrame(onLevelChange);
-
-        let mv = meter.volume
-        degrees = degrees + ~~(mv * 100);
-        rotate(degrees);
-        powerGaugeChange(mv);
-    }
+    // This function is executed repeatedly
+        function onLevelChange(time) {
+            // set up the next callback
+            rafID = window.requestAnimationFrame(onLevelChange);
+            if (shouldIStart) {
+                let mv = meter.volume
+                degrees = degrees + ~~(mv * 100);
+                rotate(degrees);
+                powerGaugeChange(mv); 
+            }
+        }
 
     // Try to get access to the microphone
-    try {
+        try {
 
-        // Retrieve getUserMedia API with all the prefixes of the browsers
-        navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+            // Retrieve getUserMedia API with all the prefixes of the browsers
+            navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 
-        // Ask for an audio input
-        navigator.getUserMedia(
-            {
-                "audio": {
-                    "mandatory": {
-                        "googEchoCancellation": "false",
-                        "googAutoGainControl": "false",
-                        "googNoiseSuppression": "false",
-                        "googHighpassFilter": "false"
+            // Ask for an audio input
+            navigator.getUserMedia(
+                {
+                    "audio": {
+                        "mandatory": {
+                            "googEchoCancellation": "false",
+                            "googAutoGainControl": "false",
+                            "googNoiseSuppression": "false",
+                            "googHighpassFilter": "false"
+                        },
+                        "optional": []
                     },
-                    "optional": []
                 },
-            },
-            onMicrophoneGranted,
-            onMicrophoneDenied
-        );
-    } catch (e) {
-        alert('getUserMedia threw exception :' + e);
-    }
+                onMicrophoneGranted,
+                onMicrophoneDenied
+            );
+        } catch (e) {
+            alert('getUserMedia threw exception :' + e);
+        }
+    // Rotation function
+        function rotate(rotation) {
+            document.querySelector(".windmil_pic").style.transform = "rotate("+rotation+"deg)";
+            //window.requestAnimationFrame(rotate)
+        }
 
-    function rotate(rotation) {
-        document.querySelector(".windmil_pic").style.transform = "rotate("+rotation+"deg)";
-        //window.requestAnimationFrame(rotate)
-    }
+    // Power gauge changing function
     
-    function powerGaugeChange(number) {
-        if (currentHeight <= 0) {
-             return false;
-         }
-        if (number < 0.4) {
-            number = 0;
+        function powerGaugeChange(number) {
+            if (currentHeight <= 0) {
+                return false;
+            }
+            if (number < 0.4) {
+                number = 0;
+            }
+            currentHeight = currentHeight + number;
+            if (currentHeight >= heightOfGauge) {
+                currentHeight = heightOfGauge + 1;
+            }
+            opacity = 1-((1/numberToDivideOpacityBy)*currentHeight)/100;
+            document.querySelector(".shroud").style.opacity = opacity;
+            numberToIncrease = currentHeight;
+            change(numberToIncrease)
         }
-        currentHeight = currentHeight + number;
-        if (currentHeight >= heightOfGauge) {
-            currentHeight = heightOfGauge + 1;
-        }
-        opacity = 1-((1/numberToDivideOpacityBy)*currentHeight)/100;
-        document.querySelector(".shroud").style.opacity = opacity;
-        numberToIncrease = currentHeight;
-        change(numberToIncrease)
-    }
 
-    powerInterval = setInterval( () => {
-        currentHeight = currentHeight - 0.5;
-        if (currentHeight <= 0 || currentHeight >= heightOfGauge) {
-             clearInterval(powerInterval);
-             return;
-        }
-        opacity = 1-((1/numberToDivideOpacityBy)*currentHeight)/100;
-        document.querySelector(".shroud").style.opacity = opacity;
-        change(currentHeight)
-    },100);
+    // Interval for gradually decreasing power gauge
+
+        powerInterval = setInterval( () => {
+            if (shouldIStart === false) {
+                currentHeight = currentHeight;
+                return;
+            }
+            currentHeight = currentHeight - 0.5;
+            if (currentHeight <= 0 || currentHeight >= heightOfGauge) {
+                clearInterval(powerInterval);
+                return;
+            }
+            opacity = 1-((1/numberToDivideOpacityBy)*currentHeight)/100;
+            document.querySelector(".shroud").style.opacity = opacity;
+            change(currentHeight)
+        },100);
+
+    // Change function for power gauge change
     
-    function change(number){
-        ctx.clearRect(0,0,c.scrollWidth,c.scrollHeight)
-        ctx.fillRect(10,scrollHeight-5,c.scrollWidth-10,-number);
-    }
+        function change(number){
+            ctx.clearRect(0,0,c.scrollWidth,c.scrollHeight)
+            ctx.fillRect(10,scrollHeight-5,c.scrollWidth-10,-number);
+        }
 
-    backupButton.addEventListener("click",function(e){
-        e.preventDefault();
-        let noMicValue = Math.random();
-        degrees = degrees + ~~(noMicValue * 1000);
-        rotate(degrees);
-        powerGaugeChange(noMicValue * 5);
-    }); 
+    // Buttons for no-mic workaround
 
-    backupButton.addEventListener("touch",function(e){
-        e.preventDefault();
-        let noMicValue = Math.random();
-        degrees = degrees + ~~(noMicValue * 1000);
-        rotate(degrees);
-        powerGaugeChange(noMicValue * 5);
-    }); 
+        backupButton.addEventListener("click",function(e){
+            e.preventDefault();
+            let noMicValue = Math.random();
+            degrees = degrees + ~~(noMicValue * 1000);
+            rotate(degrees);
+            powerGaugeChange(noMicValue * 5);
+        }); 
+
+        backupButton.addEventListener("touch",function(e){
+            e.preventDefault();
+            let noMicValue = Math.random();
+            degrees = degrees + ~~(noMicValue * 1000);
+            rotate(degrees);
+            powerGaugeChange(noMicValue * 5);
+        }); 
 });

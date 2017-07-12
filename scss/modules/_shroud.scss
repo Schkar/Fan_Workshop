@@ -3,7 +3,7 @@
     position: fixed;
     width: 100vw;
     height: 100vh;
-    background-color: transparent;
+    background-color: black;
     opacity: 1;
     transition: opacity 0.3s;
     z-index: 999;
@@ -11,7 +11,7 @@
     &:after{
         content:'';
         position:absolute;
-        display: none;
+        display: block;
         left:675px;
         top:325px;
         border-radius:100%;
