@@ -1,5 +1,9 @@
 document.addEventListener("DOMContentLoaded",function () {
     console.log("Działam");
+
+    //TODO: function for fail/success text
+    //TODO: shroud functionality
+    //TODO: animation for svg scientist
     
     let audioContext = null;
     let meter = null;
@@ -49,21 +53,48 @@ document.addEventListener("DOMContentLoaded",function () {
 
     let textToShow = "";
 
-    function speller(text) {
-        let textLength = text.length;
-        if (textToShow.length === text.length) {
-            clearInterval(spellerInterval)
-            textToShow = "";
-            return;
-        }
-        textToShow = text.substring(0,textToShow.length + 1);
-        speechBubble.innerText = textToShow;    
+    let generalCounter = 0;
+
+    let speller = () => {
+        let text = textArray[generalCounter]
+        let textPromise = new Promise((resolve) => {
+            textInterval = setInterval( () => {
+                let textLength = text.length;
+                if (textToShow.length === text.length) {
+                    clearInterval(textInterval)
+                    textToShow = "";
+                    return true;
+                }
+                textToShow = text.substring(0,textToShow.length + 1);
+                speechBubble.innerText = textToShow;
+            },30);
+            setTimeout(function(){
+                generalCounter++
+                resolve();
+            }, text.length*50+1000);
+        });
+        return textPromise;
     }
 
-    spellerInterval = setInterval( () => {   
-        speller(failureText) 
-    },50)
-    
+    speller()
+    .then(speller)
+    .then(speller)
+    .then(speller)
+    .then(speller)
+    .then(speller)
+    .then(speller)
+    .then( () => {
+        document.querySelector(".shroud").style.display = "block";
+        speller
+    }) //<----- Oops
+    .then(speller)
+    .then(speller) //<----- Flashlight
+    .then(speller)
+    .then(speller)
+    .then(speller)
+    .then(speller)
+    .then(speller)
+    .then(speller)
 
     // Create gradient
     let grd = ctx.createLinearGradient(0,c.scrollHeight,0,0);

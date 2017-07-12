@@ -11,6 +11,7 @@
     &:after{
         content:'';
         position:absolute;
+        display: none;
         left:675px;
         top:325px;
         border-radius:100%;
