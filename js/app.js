@@ -18,6 +18,7 @@ document.addEventListener("DOMContentLoaded",function () {
     let numberToDivideOpacityBy = c.scrollHeight > 200 ? 2.8 : 1.4;
     let micValue = true;
     let shouldIStart = false;
+    let scientistHead = document.querySelector(".upper_scientist");
     let textArray = 
         [
             "Welcome to our PowerPlant!",
@@ -49,14 +50,21 @@ document.addEventListener("DOMContentLoaded",function () {
     let speechBubble = document.querySelector(".speech_bubble");
     let textToShow = "";
     let generalCounter = 0;
+    let successCounter = 0;
+    scientistHead.style.animationPlayState = "paused";
 
-    // Function with promise to spell text in message bubble
-        let speller = () => {
-            let text = textArray[generalCounter]
+    // Function with promise to spell text in message bubble //FIXME: Only first iteration needs a parameter, then it can be passed in resolve to next promise - this works! Check more options
+        let speller = (text, counter) => {
+            console.log(counter)
+            console.log(text);
+            scientistHead.style.animationPlayState = "running";
             let textPromise = new Promise((resolve) => {
                 textInterval = setInterval( () => {
-                    let textLength = text.length;
+                    let textLength = text[counter].length;
                     if (textToShow.length === text.length) {
+                        //scientistHead.addEventListener("animationiteration", () => {
+                            scientistHead.style.animationPlayState = "paused"; //FIXME: first animation plays nice. Next speller however works only once...
+                        //})
                         clearInterval(textInterval)
                         textToShow = "";
                         return true;
@@ -65,16 +73,15 @@ document.addEventListener("DOMContentLoaded",function () {
                     speechBubble.innerText = textToShow;
                 },30);
                 setTimeout(function(){
-                    generalCounter++
-                    resolve();
+                    resolve(text, "dupa"); //FIXME: Only 1 argument works... needs checking
                 }, text.length*50+1000);
             });
             return textPromise;
         }
     // Speaking section of promise chain...
-        // speller()
-        // .then(speller)
-        // .then(speller)
+        speller(textArray,0) //TODO: Pass whole text array? Or just pass number to the next promise?
+        .then(speller)
+        //.then(speller())
         // .then(speller)
         // .then(speller)
         // .then(speller)
@@ -90,7 +97,8 @@ document.addEventListener("DOMContentLoaded",function () {
         //     speller
         //     document.querySelector(".shroud").style.backgroundColor = "transparent";
         //     c.style.display = "block";
-        //     micValue ? document.querySelector(".windmil_pic").style.display = "block" : noMic.style.display = "block";
+        //     document.querySelector(".windmil_pic").style.display = "block"
+        //     micValue ? null : noMic.style.display = "block";
         //     shouldIStart = true;
         // }) //<----- Flashlight
         // .then(speller)
@@ -210,6 +218,18 @@ document.addEventListener("DOMContentLoaded",function () {
             if (currentHeight <= 0 || currentHeight >= heightOfGauge) {
                 clearInterval(powerInterval);
                 return;
+            }
+            if (currentHeight <= 0) {
+                //TODO: speller - failure - think about that.
+                speller(failureText)
+            }
+            if (currentHeight >= heightOfGauge) {
+                //TODO: speller - success
+                speller(successText)
+                .then(speller)
+                .then(speller)
+                .then(speller)
+                .then(speller)
             }
             opacity = 1-((1/numberToDivideOpacityBy)*currentHeight)/100;
             document.querySelector(".shroud").style.opacity = opacity;

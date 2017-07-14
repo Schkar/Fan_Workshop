@@ -72,6 +72,10 @@
             @include large{
                 width: 390px;
                 height: 560px;
+            }
+            .upper_scientist{
+                position: relative;
+                animation: talk_animation 0.2s infinite linear;
             }    
         }
 }
