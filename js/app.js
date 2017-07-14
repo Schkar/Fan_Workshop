@@ -1,7 +1,6 @@
 document.addEventListener("DOMContentLoaded",function () {
-    //TODO: function for fail/success text
-    //TODO: animation for svg scientist
     //TODO: Uncomment whole talking section
+    //TODO: Fixes
     
     let audioContext = null;
     let meter = null;
@@ -27,7 +26,7 @@ document.addEventListener("DOMContentLoaded",function () {
             "Don't touch anything! You may break the PowerPlant!",
             "And if you do, the whole world will drown in darkness!",
             "So, just don't break anything",
-            "Oops, I have to charge my phone. Where is the socket?",
+            "*Gasp*, I have to charge my phone. Where is the socket?",
             "Oh, here it is. *click*",
             "Oops...",
             "Quick! Something broke. You need to save us!",
@@ -46,22 +45,30 @@ document.addEventListener("DOMContentLoaded",function () {
             "But that is just my job, as a scientist, no need to thank me.",
             "Let's get out of here before anyone notices any problems."
         ];
-    let failureText = "Oh no. You failed:(. There is no hope for us now...";
+    let failureText = ["Oh no. You failed:(. There is no hope for us now..."];
     let speechBubble = document.querySelector(".speech_bubble");
     let textToShow = "";
     let generalCounter = 0;
     let successCounter = 0;
     scientistHead.style.animationPlayState = "paused";
 
-    // Function with promise to spell text in message bubble //FIXME: Only first iteration needs a parameter, then it can be passed in resolve to next promise - this works! Check more options
-        let speller = (text, counter) => {
-            console.log(counter)
-            console.log(text);
+    // Function with promise to spell text in message bubble
+        let speller = (data) => {
             scientistHead.style.animationPlayState = "running";
+            if (data.text[data.counter].indexOf("Oops") >= 0) {
+                document.querySelector(".shroud").style.display = "block";
+            }
+            if (data.text[data.counter].indexOf("flashlight") >= 0) {
+                document.querySelector(".shroud").style.backgroundColor = "transparent";
+                c.style.display = "block";
+                document.querySelector(".windmil_pic").style.display = "block"
+                micValue ? null : noMic.style.display = "block";
+                shouldIStart = true;
+            }
             let textPromise = new Promise((resolve) => {
                 textInterval = setInterval( () => {
-                    let textLength = text[counter].length;
-                    if (textToShow.length === text.length) {
+                    let textLength = data.text[data.counter].length;
+                    if (textToShow.length === data.text[data.counter].length) {
                         //scientistHead.addEventListener("animationiteration", () => {
                             scientistHead.style.animationPlayState = "paused"; //FIXME: first animation plays nice. Next speller however works only once...
                         //})
@@ -69,43 +76,33 @@ document.addEventListener("DOMContentLoaded",function () {
                         textToShow = "";
                         return true;
                     }
-                    textToShow = text.substring(0,textToShow.length + 1);
+                    textToShow = data.text[data.counter].substring(0,textToShow.length + 1);
                     speechBubble.innerText = textToShow;
                 },30);
                 setTimeout(function(){
-                    resolve(text, "dupa"); //FIXME: Only 1 argument works... needs checking
-                }, text.length*50+1000);
+                    resolve({text: data.text, counter: data.counter + 1});
+                }, data.text[data.counter].length*50+1000);
             });
             return textPromise;
         }
     // Speaking section of promise chain...
-        speller(textArray,0) //TODO: Pass whole text array? Or just pass number to the next promise?
+        speller({text: textArray, counter: 0})
         .then(speller)
-        //.then(speller())
-        // .then(speller)
-        // .then(speller)
-        // .then(speller)
-        // .then(speller)
-        // .then(speller)
-        // .then( () => {
-        //     document.querySelector(".shroud").style.display = "block";
-        //     speller
-        // }) //<----- Oops
-        // .then(speller)
-        // .then(speller)
-        // .then( () => {
-        //     speller
-        //     document.querySelector(".shroud").style.backgroundColor = "transparent";
-        //     c.style.display = "block";
-        //     document.querySelector(".windmil_pic").style.display = "block"
-        //     micValue ? null : noMic.style.display = "block";
-        //     shouldIStart = true;
-        // }) //<----- Flashlight
-        // .then(speller)
-        // .then(speller)
-        // .then(speller)
-        // .then(speller)
-        // .then(speller)
+        .then(speller)
+        .then(speller)
+        .then(speller)
+        .then(speller)
+        .then(speller)
+        .then(speller)
+        .then(speller) //<----- Oops
+        .then(speller)
+        .then(speller)
+        .then(speller) //<----- Flashlight
+        .then(speller)
+        .then(speller)
+        .then(speller)
+        .then(speller)
+        .then(speller)
 
     // Create gradient
         let grd = ctx.createLinearGradient(0,c.scrollHeight,0,0);
@@ -118,8 +115,10 @@ document.addEventListener("DOMContentLoaded",function () {
         ctx.fillStyle = grd;
 
     // Flashlight functionality
-        document.querySelector(".shroud").addEventListener("mousemove", function(event){    
-            styleElem.innerHTML = ".shroud:after {left: "+event.clientX+"px; top: "+event.clientY+"px;}"
+        document.querySelector(".shroud").addEventListener("mousemove", function(event){
+            let x = event.clientX - 75;
+            let y = event.clientY - 75;
+            micValue ? styleElem.innerHTML = ".shroud:after {left: "+ x +"px; top: "+ y +"px;}" : styleElem.innerHTML = ".shroud:after {left: "+ x +"px; top: "+ y +"px; cursor: initial}"  //FIXME: This needs mouse control checking... - can't click on button! This is the case of z-index
         })
     
     // Retrieve AudioContext with all the prefixes of the browsers
@@ -210,6 +209,7 @@ document.addEventListener("DOMContentLoaded",function () {
     // Interval for gradually decreasing power gauge
 
         powerInterval = setInterval( () => {
+            return
             if (shouldIStart === false) {
                 currentHeight = currentHeight;
                 return;
@@ -217,21 +217,20 @@ document.addEventListener("DOMContentLoaded",function () {
             currentHeight = currentHeight - 0.5;
             if (currentHeight <= 0 || currentHeight >= heightOfGauge) {
                 clearInterval(powerInterval);
-                return;
             }
             if (currentHeight <= 0) {
-                //TODO: speller - failure - think about that.
-                speller(failureText)
+                speller({text: failureText, counter: 0})
+                return;
             }
             if (currentHeight >= heightOfGauge) {
-                //TODO: speller - success
-                speller(successText)
+                speller({text: successText, counter: 0})
                 .then(speller)
                 .then(speller)
                 .then(speller)
                 .then(speller)
+                return;
             }
-            opacity = 1-((1/numberToDivideOpacityBy)*currentHeight)/100;
+            opacity = 1-((1/numberToDivideOpacityBy)*currentHeight)/100; //FIXME: After start shroud gets lighter because currentHeight is high (35)
             document.querySelector(".shroud").style.opacity = opacity;
             change(currentHeight)
         },100);
