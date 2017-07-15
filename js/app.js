@@ -1,6 +1,5 @@
 document.addEventListener("DOMContentLoaded",function () {
-    //TODO: Uncomment whole talking section
-    //TODO: Fixes
+    //TODO: Fixes - mic still not calibrated...
     
     let audioContext = null;
     let meter = null;
@@ -13,17 +12,19 @@ document.addEventListener("DOMContentLoaded",function () {
     let backupButton = document.querySelector(".button_to_smash");
     let c = document.getElementById("power_gauge");
     let ctx = c.getContext("2d");
-    let heightOfGauge = c.scrollHeight > 200 ? 280 : 140;
-    let numberToDivideOpacityBy = c.scrollHeight > 200 ? 2.8 : 1.4;
+    window.matchMedia("(min-width: 640px)").matches ? c.setAttribute("height","300") : c.setAttribute("height","150");
+    window.matchMedia("(min-width: 640px)").matches ? c.setAttribute("width","100") : c.setAttribute("width","50");
+    let heightOfGauge = c.height > 200 ? 280 : 140;
+    let numberToDivideOpacityBy = c.height > 200 ? 2.8 : 1.4;
     let micValue = true;
     let shouldIStart = false;
     let scientistHead = document.querySelector(".upper_scientist");
     let textArray = 
         [
-            "Welcome to our PowerPlant!",
+            "Welcome to our PowerPlant\u2122\u00AE!",
             "This is main control room.",
             "Here we didly-do some technical stuff, which you won't understand, because you aren't scientist, like me",
-            "Don't touch anything! You may break the PowerPlant!",
+            "Don't touch anything! You may break the PowerPlant\u2122\u00AE!",
             "And if you do, the whole world will drown in darkness!",
             "So, just don't break anything",
             "*Gasp*, I have to charge my phone. Where is the socket?",
@@ -48,13 +49,16 @@ document.addEventListener("DOMContentLoaded",function () {
     let failureText = ["Oh no. You failed:(. There is no hope for us now..."];
     let speechBubble = document.querySelector(".speech_bubble");
     let textToShow = "";
-    let generalCounter = 0;
-    let successCounter = 0;
     scientistHead.style.animationPlayState = "paused";
 
     // Function with promise to spell text in message bubble
         let speller = (data) => {
-            scientistHead.style.animationPlayState = "running";
+            scientistHead.style.animationPlayState = "running"; 
+            if (data.counter + 1 === data.text.length) {//FIXME: There is an error - data is undefined. Will work, when that is resolved.
+                shouldIStart = true;
+                scientistHead.style.animationPlayState = "paused";
+                return;
+            }
             if (data.text[data.counter].indexOf("Oops") >= 0) {
                 document.querySelector(".shroud").style.display = "block";
             }
@@ -63,13 +67,14 @@ document.addEventListener("DOMContentLoaded",function () {
                 c.style.display = "block";
                 document.querySelector(".windmil_pic").style.display = "block"
                 micValue ? null : noMic.style.display = "block";
-                shouldIStart = true;
+                heightOfGauge = c.scrollHeight > 200 ? 280 : 140;
+                numberToDivideOpacityBy = c.scrollHeight > 200 ? 2.8 : 1.4;
             }
             let textPromise = new Promise((resolve) => {
                 textInterval = setInterval( () => {
                     let textLength = data.text[data.counter].length;
                     if (textToShow.length === data.text[data.counter].length) {
-                        //scientistHead.addEventListener("animationiteration", () => {
+                        // scientistHead.addEventListener("animationiteration", () => {
                             scientistHead.style.animationPlayState = "paused"; //FIXME: first animation plays nice. Next speller however works only once...
                         //})
                         clearInterval(textInterval)
@@ -105,7 +110,7 @@ document.addEventListener("DOMContentLoaded",function () {
         .then(speller)
 
     // Create gradient
-        let grd = ctx.createLinearGradient(0,c.scrollHeight,0,0);
+        let grd = ctx.createLinearGradient(0,heightOfGauge,0,0);
         grd.addColorStop(0.15,"darkred");
         grd.addColorStop(0.2,"red");
         grd.addColorStop(0.5,"orange");
@@ -134,6 +139,7 @@ document.addEventListener("DOMContentLoaded",function () {
 
     // Callback triggered if the access to the microphone is granted
         function onMicrophoneGranted(stream) {
+            scientistHead.style.animationPlayState = "paused";
             // Create an AudioNode from the stream.
             mediaStreamSource = audioContext.createMediaStreamSource(stream);
             // Create a new volume meter and connect it.
@@ -150,11 +156,11 @@ document.addEventListener("DOMContentLoaded",function () {
             rafID = window.requestAnimationFrame(onLevelChange);
             if (shouldIStart) {
                 let mv = meter.volume
-                if (mv < 0.0001) {
-                    mv = mv * 1000;
-                }
-                if (mv < 0.001) {
+                if (mv <= 0.009) {
                     mv = mv * 100;
+                }
+                if (mv <= 0.0009) {
+                    mv = mv * 1000;
                 }
                 degrees = degrees + ~~(mv * 10);
                 rotate(degrees);
@@ -229,6 +235,7 @@ document.addEventListener("DOMContentLoaded",function () {
                 return;
             }
             if (currentHeight >= heightOfGauge) {
+                
                 speller({text: successText, counter: 0})
                 .then(speller)
                 .then(speller)
@@ -242,10 +249,10 @@ document.addEventListener("DOMContentLoaded",function () {
         },100);
 
     // Change function for power gauge change
-    
+
         function change(number){
-            ctx.clearRect(0,0,c.scrollWidth,c.scrollHeight)
-            ctx.fillRect(10,scrollHeight-5,c.scrollWidth-10,-number);
+            ctx.clearRect(0,0,c.width,c.height)
+            ctx.fillRect(c.width/10,heightOfGauge+5,c.width-(c.width/5),-number)
         }
 
     // Buttons for no-mic workaround
