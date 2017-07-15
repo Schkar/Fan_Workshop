@@ -150,7 +150,13 @@ document.addEventListener("DOMContentLoaded",function () {
             rafID = window.requestAnimationFrame(onLevelChange);
             if (shouldIStart) {
                 let mv = meter.volume
-                degrees = degrees + ~~(mv * 100);
+                if (mv < 0.0001) {
+                    mv = mv * 1000;
+                }
+                if (mv < 0.001) {
+                    mv = mv * 100;
+                }
+                degrees = degrees + ~~(mv * 10);
                 rotate(degrees);
                 powerGaugeChange(mv); 
             }
@@ -209,7 +215,7 @@ document.addEventListener("DOMContentLoaded",function () {
     // Interval for gradually decreasing power gauge
 
         powerInterval = setInterval( () => {
-            return
+            //return
             if (shouldIStart === false) {
                 currentHeight = currentHeight;
                 return;
