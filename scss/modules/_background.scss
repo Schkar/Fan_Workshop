@@ -7,6 +7,10 @@
      src: url("../fonts/Basic-Regular.ttf");
      font-family: "Basic";
  }
+body{
+    margin: 0;
+    padding: 0;
+}
 
 .pplant{
     width: 95vw;
@@ -20,4 +24,25 @@
     background-size: cover;
     opacity: 0.5;
     z-index: -1;
+}
+
+.finalScreen{
+    display: none;
+    background-color: black;
+    opacity: 0;
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    text-align: center;
+    font-size: 1em;
+    transition: opacity 1s;
+    z-index: 10000;
+    @include medium{
+        font-size: 3.5em;
+    }
+    .finalScreenMessage{
+        position: relative;
+        top: 45vh;
+        left: 0;
+    }
 }

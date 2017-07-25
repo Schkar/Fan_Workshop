@@ -6,11 +6,12 @@
     width: 80%;
     left: 10%;
     @include small{
-        font-size: 1em;
+        font-size: 1.5em;
     }
     background-color: #fce6c7;
     margin: 0;
     padding: 10px;
+    text-align: center;
     .no_mic_text{
         margin: 5px;
         text-align: center;

@@ -54,7 +54,7 @@ document.addEventListener("DOMContentLoaded",function () {
     // Function with promise to spell text in message bubble
         let speller = (data) => {
             scientistHead.style.animationPlayState = "running"; 
-            if (data.counter + 1 === data.text.length) {//FIXME: There is an error - data is undefined. Will work, when that is resolved.
+            if (data.counter === data.text.length) {
                 shouldIStart = true;
                 scientistHead.style.animationPlayState = "paused";
                 return;
@@ -66,7 +66,7 @@ document.addEventListener("DOMContentLoaded",function () {
                 document.querySelector(".shroud").style.backgroundColor = "transparent";
                 c.style.display = "block";
                 document.querySelector(".windmil_pic").style.display = "block"
-                micValue ? null : noMic.style.display = "block";
+                //micValue ? null : noMic.style.display = "block";
                 heightOfGauge = c.scrollHeight > 200 ? 280 : 140;
                 numberToDivideOpacityBy = c.scrollHeight > 200 ? 2.8 : 1.4;
             }
@@ -74,9 +74,7 @@ document.addEventListener("DOMContentLoaded",function () {
                 textInterval = setInterval( () => {
                     let textLength = data.text[data.counter].length;
                     if (textToShow.length === data.text[data.counter].length) {
-                        // scientistHead.addEventListener("animationiteration", () => {
-                            scientistHead.style.animationPlayState = "paused"; //FIXME: first animation plays nice. Next speller however works only once...
-                        //})
+                            scientistHead.style.animationPlayState = "paused";
                         clearInterval(textInterval)
                         textToShow = "";
                         return true;
@@ -134,7 +132,8 @@ document.addEventListener("DOMContentLoaded",function () {
 
     // Callback triggered if the microphone permission is denied
         function onMicrophoneDenied() {
-        micValue = false;
+            micValue = false;
+            document.querySelector(".no_mic").style.display = "block"; 
         }
 
     // Callback triggered if the access to the microphone is granted
@@ -220,6 +219,22 @@ document.addEventListener("DOMContentLoaded",function () {
 
     // Interval for gradually decreasing power gauge
 
+        finalScreenShow = (data) => {
+            document.querySelector(".finalScreen").style.display = "block";
+            message = "Game over:( Everything is lost...";
+            document.querySelector(".finalScreenMessage").style.color = "red";
+            if (data.counter > 3) {
+                message = "Well done! You have saved the world!";
+                document.querySelector(".finalScreenMessage").style.color = "green";
+            }
+            setTimeout( ()=> {
+                        speechBubble.style.display = "none";
+                        document.querySelector(".finalScreenMessage").innerText = message;
+                        document.querySelector(".finalScreen").style.opacity = 1;
+            }),1000
+            return false;
+        }
+
         powerInterval = setInterval( () => {
             //return
             if (shouldIStart === false) {
@@ -231,7 +246,9 @@ document.addEventListener("DOMContentLoaded",function () {
                 clearInterval(powerInterval);
             }
             if (currentHeight <= 0) {
+                ctx.clearRect(0,0,c.width,c.height)
                 speller({text: failureText, counter: 0})
+                .then(finalScreenShow)
                 return;
             }
             if (currentHeight >= heightOfGauge) {
@@ -241,6 +258,7 @@ document.addEventListener("DOMContentLoaded",function () {
                 .then(speller)
                 .then(speller)
                 .then(speller)
+                .then(finalScreenShow)    
                 return;
             }
             opacity = 1-((1/numberToDivideOpacityBy)*currentHeight)/100; //FIXME: After start shroud gets lighter because currentHeight is high (35)
@@ -257,19 +275,19 @@ document.addEventListener("DOMContentLoaded",function () {
 
     // Buttons for no-mic workaround
 
-        backupButton.addEventListener("click",function(e){
-            e.preventDefault();
-            let noMicValue = Math.random();
-            degrees = degrees + ~~(noMicValue * 1000);
-            rotate(degrees);
-            powerGaugeChange(noMicValue * 5);
-        }); 
+        // backupButton.addEventListener("click",function(e){
+        //     e.preventDefault();
+        //     let noMicValue = Math.random();
+        //     degrees = degrees + ~~(noMicValue * 1000);
+        //     rotate(degrees);
+        //     powerGaugeChange(noMicValue * 5);
+        // }); 
 
-        backupButton.addEventListener("touch",function(e){
-            e.preventDefault();
-            let noMicValue = Math.random();
-            degrees = degrees + ~~(noMicValue * 1000);
-            rotate(degrees);
-            powerGaugeChange(noMicValue * 5);
-        }); 
+        // backupButton.addEventListener("touch",function(e){
+        //     e.preventDefault();
+        //     let noMicValue = Math.random();
+        //     degrees = degrees + ~~(noMicValue * 1000);
+        //     rotate(degrees);
+        //     powerGaugeChange(noMicValue * 5);
+        // }); 
 });
